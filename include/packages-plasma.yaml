@@ -1,0 +1,71 @@
+{{- $architecture := or .architecture "arm64" -}}
+
+architecture: {{ $architecture }}
+
+actions:
+  - action: apt
+    recommends: false
+    description: Install plasma packages
+    packages:
+      - plasma-mobile
+      - plasma-mobile-tweaks
+      - plasma-settings
+      - plasma-phonebook
+      - plasma-dialer
+      - spacebar
+      - angelfish
+      - okular-mobile
+      - qmlkonsole
+      - kdeconnect
+      - elisa
+      - firefox-esr
+      - keepassxc
+      - ktrip
+      - neochat
+      - syncthing
+      - zsh
+      - zsh-syntax-highlighting
+      - git
+      - vcsh
+      - kaidan
+      - kalendar
+      - plasma-discover
+      - plasma-disks
+      - plasma-systemmonitor
+      - plasma-wayland-protocols
+      - upower
+      - layer-shell-qt
+      - kscreen
+      - kaddressbook
+      - systemsettings
+
+  - action: run
+    description: Disable getty in the Plasma environment
+    chroot: true
+    command: systemctl disable getty@.service
+
+  - action: run
+    description: Enable plasma-mobile service
+    chroot: true
+    command: systemctl enable plasma-mobile
+
+  - action: run
+    description: Create autostart directory
+    chroot: true
+    command: mkdir -p /home/karsten/.config/autostart-scripts/
+
+  - action: overlay
+    description: Lock screen on startup
+    source: overlays/autostart-scripts/
+    destination: /home/karsten/.config/autostart-scripts/
+
+  - action: run
+    description: Fix ownership of user's config
+    chroot: true
+    command: "chown -R 1000:1000 /home/karsten/"
+
+  - action: run
+    description: Enable user's syncthing service
+    chroot: true
+    command: systemctl enable syncthing@karsten
+
